@@ -1,0 +1,244 @@
+---
+import Base from '../layouts/Base.astro';
+import Visual from '../components/Visual.astro';
+import { getProjects, divisionOf, latestTest, pad2 } from '../lib/projects';
+import { statusOf } from '../lib/status';
+import { SITE } from '../site.config';
+
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured).slice(0, 2);
+const lastTest = latestTest(projects);
+const total = pad2(projects.length);
+---
+<Base active="index" home>
+  <section class="hero" aria-labelledby="hero-title">
+    <svg class="orbits" viewBox="0 0 1000 1000" aria-hidden="true">
+      <circle cx="500" cy="500" r="380" />
+      <circle cx="500" cy="500" r="440" />
+      <circle cx="500" cy="500" r="500" stroke-dasharray="2 6" />
+      <g class="orbit"><circle class="sat" r="4" cx="500" cy="60" /></g>
+    </svg>
+    <div class="wrap hero-in">
+      <div class="hero-t">
+        <h1 id="hero-title" class="t-hero">
+          <span class="ln"><span>Unsanctioned projects.</span></span>
+          <span class="ln"><span>Properly engineered.</span></span>
+        </h1>
+        <p class="sub">Where the after-hours work lives: simulations, models, machines and books.</p>
+      </div>
+      <div class="readout">
+        <span class="mono">Mission elapsed <b data-met={SITE.missionStart}>T+ 000d 00:00:00</b></span>
+        <span class="mono">Last test <b data-last={lastTest ?? ''}>{lastTest ? lastTest : 'pending'}</b></span>
+        <span class="mono">Budget variance <b>yes</b></span>
+      </div>
+    </div>
+  </section>
+
+  {featured.length > 0 && (
+    <section class="wrap sec" aria-labelledby="featured-h">
+      <div class="sechead">
+        <h2 id="featured-h" class="t-section">Featured</h2>
+        <span class="mono">{pad2(featured.length)} programs</span>
+      </div>
+      <div class:list={['feat', { one: featured.length === 1 }]}>
+        {featured.map((p) => {
+          const s = statusOf(p.data.status);
+          return (
+            <a class="card panel" href={`/${p.id}/`}>
+              <Visual project={p} variant="thumb" />
+              <div class="b">
+                <span class="code">{p.data.designation} · {divisionOf(p).toUpperCase()}</span>
+                <h3>{p.data.title}</h3>
+                <p class="cardsub">{p.data.tagline}</p>
+                <div class="ph">
+                  <span class="mono"><span class={`lamp lamp--${s.lamp}`} aria-hidden="true"></span><b>{s.code} {s.name}</b></span>
+                  <span class="mono">{p.data.lastTest ? `Last test ${p.data.lastTest}` : p.data.started ? `Started ${p.data.started}` : ''}</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap sec" aria-labelledby="index-h">
+    <div class="sechead">
+      <h2 id="index-h" class="t-section">Index</h2>
+      <span class="mono" data-count aria-live="polite">Showing {total} / {total}</span>
+    </div>
+    <div class="filters" role="group" aria-label="Filter programs">
+      <button type="button" data-f="all" aria-pressed="true">ALL</button>
+      <button type="button" data-f="labs" aria-pressed="false">LABS</button>
+      <button type="button" data-f="studios" aria-pressed="false">STUDIOS</button>
+    </div>
+    <ul class="rows" data-total={projects.length}>
+      {projects.map((p) => {
+        const s = statusOf(p.data.status);
+        return (
+          <li class="row" data-div={divisionOf(p)}>
+            <a href={`/${p.id}/`}>
+              <span class="code dsg" data-c={p.data.designation}>{p.data.designation}</span>
+              <b class="ttl">{p.data.title}<span class="arrow" aria-hidden="true">→</span></b>
+              <span class="say">{s.line}</span>
+              <span class="st"><span class="mono"><span class={`lamp lamp--${s.lamp}`} aria-hidden="true"></span><b title={s.name}>{s.code}</b><span class="vh"> {s.name}</span></span></span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  /* HERO: runs under the transparent header. */
+  .hero { position: relative; height: 560px; overflow: hidden; border-bottom: 1px solid var(--hairline); }
+  .orbits { position: absolute; right: -180px; bottom: -560px; width: 1000px; height: 1000px; max-width: none; }
+  .orbits circle { fill: none; stroke: var(--hairline); }
+  .orbits .sat { fill: var(--signal); stroke: none; }
+  .orbit { transform-origin: 500px 500px; animation: orbit 60s linear infinite; }
+  @keyframes orbit { to { transform: rotate(360deg); } }
+  .hero-in { position: absolute; inset: 0; margin: 0 auto; }
+  .hero-t { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 48px; max-width: 900px; }
+  .hero h1 { text-transform: uppercase; }
+  .ln { display: block; overflow: hidden; }
+  .ln > span { display: block; animation: rise 0.9s var(--ease) 0.15s both; }
+  .ln:nth-child(2) > span { animation-delay: 0.27s; }
+  @keyframes rise { from { transform: translateY(105%); } }
+  .sub { margin-top: 20px; font-size: 17px; line-height: 1.5; color: var(--ink-muted); max-width: 460px; animation: fade 0.8s 0.65s both; }
+  @keyframes fade { from { opacity: 0; } }
+  .readout { position: absolute; right: var(--gutter); bottom: 48px; text-align: right; }
+  .readout .mono { display: block; line-height: 2; }
+
+  /* SECTIONS */
+  .sec { padding-top: 56px; }
+  .sechead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+
+  .feat { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
+  .feat.one { grid-template-columns: 1fr; }
+  .card { display: block; transition: border-color 0.25s, transform 0.35s var(--ease); }
+  .card:hover { border-color: var(--ink-muted); transform: translateY(-3px); }
+  .b { padding: 18px 20px 20px; }
+  .card h3 { font-weight: 800; font-size: 28px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.06em; margin: 6px 0 4px; }
+  .cardsub { color: var(--ink-muted); font-size: 15px; }
+  .ph { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hairline); display: flex; justify-content: space-between; gap: 12px; }
+
+  .filters { display: flex; gap: 6px; margin-bottom: 6px; }
+  .filters button {
+    background: none; border: 1px solid var(--hairline); color: var(--ink-muted); cursor: pointer; padding: 6px 12px;
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; transition: color 0.2s, border-color 0.2s;
+  }
+  .filters button:hover { color: var(--ink); }
+  .filters button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
+
+  .rows { list-style: none; border-top: 1px solid var(--hairline); position: relative; z-index: 0; }
+  .row {
+    border-bottom: 1px solid var(--hairline); max-height: 120px; overflow: hidden;
+    transition: opacity 0.3s, transform 0.3s, max-height 0.4s, border-color 0.4s;
+  }
+  .row a {
+    display: grid; grid-template-columns: 110px 1fr 1.3fr 150px; gap: 16px; align-items: baseline;
+    padding: 16px 0; position: relative;
+  }
+  .row a::before {
+    content: ""; position: absolute; left: calc(-1 * var(--space-2)); top: 0; bottom: 0; width: 0; z-index: -1;
+    background: var(--surface-100); transition: width 0.35s var(--ease);
+  }
+  .row a:hover::before, .row a:focus-visible::before { width: calc(100% + var(--space-4)); }
+  .dsg { color: var(--ink-muted); }
+  .row a:hover .dsg { color: var(--signal); }
+  .ttl { font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; font-size: 16px; }
+  .arrow { display: inline-block; opacity: 0; transform: translateX(-6px); transition: opacity 0.25s, transform 0.25s; margin-left: 8px; }
+  .row a:hover .arrow { opacity: 1; transform: none; }
+  .say { font-size: 14px; color: var(--ink-muted); }
+  .st { text-align: right; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .row.hide { opacity: 0; transform: translateX(-12px); max-height: 0; border-bottom-color: transparent; }
+
+  @media (max-width: 900px) {
+    .feat { grid-template-columns: 1fr; }
+    .row a { grid-template-columns: 90px 1fr auto; }
+    .say { grid-column: 2 / -1; grid-row: 2; margin-top: -8px; }
+  }
+  @media (max-width: 760px) {
+    .hero { height: auto; min-height: 520px; padding-top: var(--hdr-h); }
+    .hero h1 { font-size: clamp(34px, 10vw, 56px); }
+    .orbits { right: -420px; bottom: -640px; }
+    .hero-t { bottom: 132px; }
+    .readout { left: var(--gutter); right: auto; bottom: 28px; text-align: left; }
+    .readout .mono { line-height: 1.8; }
+  }
+  @media (max-width: 480px) {
+    .row a { grid-template-columns: 1fr auto; gap: 4px 12px; }
+    .dsg { grid-column: 1; grid-row: 1; }
+    .st { grid-column: 2; grid-row: 1; }
+    .ttl { grid-column: 1 / -1; grid-row: 2; }
+    .say { grid-column: 1 / -1; grid-row: 3; margin-top: 0; }
+  }
+</style>
+
+<script>
+  import { mountAllGlobes } from '../scripts/globe';
+
+  mountAllGlobes();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const p = (n: number, w = 2) => String(n).padStart(w, '0');
+
+  // Mission elapsed since the first program, and days since the last test.
+  const met = document.querySelector<HTMLElement>('[data-met]');
+  const start = met ? Date.parse(`${met.dataset.met}T00:00:00Z`) : NaN;
+  const tickMet = () => {
+    if (!met || Number.isNaN(start)) return;
+    let s = Math.max(0, Math.floor((Date.now() - start) / 1000));
+    const d = Math.floor(s / 86400);
+    s %= 86400;
+    met.textContent = `T+ ${p(d, 3)}d ${p(Math.floor(s / 3600))}:${p(Math.floor((s % 3600) / 60))}:${p(s % 60)}`;
+  };
+  tickMet();
+  setInterval(tickMet, 1000);
+
+  const last = document.querySelector<HTMLElement>('[data-last]');
+  if (last?.dataset.last) {
+    const days = Math.floor((Date.now() - Date.parse(`${last.dataset.last}T00:00:00Z`)) / 86400000);
+    if (Number.isFinite(days) && days >= 0) last.textContent = days === 0 ? 'today' : `T−${days} ${days === 1 ? 'day' : 'days'}`;
+  }
+
+  // Designation decodes like a teleprinter on hover.
+  const glyphs = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789-#/';
+  document.querySelectorAll<HTMLElement>('.row a').forEach((a) => {
+    const c = a.querySelector<HTMLElement>('[data-c]');
+    if (!c || reduce) return;
+    const final = c.dataset.c!;
+    let timer: number | undefined;
+    const run = () => {
+      let f = 0;
+      clearInterval(timer);
+      timer = window.setInterval(() => {
+        c.textContent = [...final].map((ch, i) => (i < f ? ch : glyphs[Math.floor(Math.random() * glyphs.length)])).join('');
+        if (++f > final.length) { clearInterval(timer); c.textContent = final; }
+      }, 28);
+    };
+    a.addEventListener('mouseenter', run);
+    a.addEventListener('focus', run);
+  });
+
+  // Filters collapse rows out rather than reloading.
+  const rows = [...document.querySelectorAll<HTMLElement>('.row')];
+  const btns = [...document.querySelectorAll<HTMLButtonElement>('.filters button')];
+  const count = document.querySelector('[data-count]');
+  const total = p(rows.length);
+  btns.forEach((b) =>
+    b.addEventListener('click', () => {
+      btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      let n = 0;
+      rows.forEach((r) => {
+        const show = b.dataset.f === 'all' || r.dataset.div === b.dataset.f;
+        r.classList.toggle('hide', !show);
+        r.querySelector('a')?.setAttribute('tabindex', show ? '0' : '-1');
+        r.toggleAttribute('aria-hidden', !show);
+        if (show) n++;
+      });
+      if (count) count.textContent = `Showing ${p(n)} / ${total}`;
+    }),
+  );
+</script>

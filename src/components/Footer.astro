@@ -1,0 +1,37 @@
+---
+import Wordmark from './Wordmark.astro';
+import { SITE } from '../site.config';
+
+// The legal line is set straight: no jokes there.
+const year = new Date().getUTCFullYear();
+---
+<footer class="foot">
+  <div class="wrap grid">
+    <a href="/" aria-label="Skunk42, home"><Wordmark size={15} /></a>
+    <ul class="links">
+      {SITE.social.map((s) => (
+        <li>{s.url ? <a href={s.url} rel="me noopener" target="_blank">{s.name} ↗</a> : <span>{s.name}</span>}</li>
+      ))}
+    </ul>
+    <div class="legal">
+      <span class="mono">© {year} Skunk42 · <a href="/about/#paperwork">Imprint</a> · <a href="/about/#paperwork">Privacy</a></span>
+      <span class="mono">Built after hours. Tested anyway.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot { margin-top: 72px; border-top: 1px solid var(--hairline); padding: 28px 0 32px; }
+  .grid { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+  .links { display: flex; gap: 22px; list-style: none; }
+  .links a, .links span {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted);
+  }
+  .links a:hover { color: var(--ink); }
+  .legal { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 18px; }
+  .legal a:hover { color: var(--ink); }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+    .legal { flex-direction: column; gap: 6px; }
+  }
+</style>

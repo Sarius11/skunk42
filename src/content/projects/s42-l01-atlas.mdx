@@ -1,0 +1,79 @@
+---
+designation: S42-L01
+title: Atlas
+tagline: A live Earth, seen from orbit.
+lede: A small digital Earth on the desk, showing the weather as it is right now, not as it was six hours ago.
+status: P3
+started: "2026-10"
+nextMilestone: Five satellites, one grid, no seams
+knownIssues: Clouds are not yet volumetric. They are, technically, wallpaper.
+featured: true
+visual: globe
+---
+
+## Brief
+
+A three-dimensional Earth, built on CesiumJS and dressed in NASA's Blue Marble imagery, one cloud-free mosaic for each month. On top of it goes the weather: real clouds from the five geostationary satellites that watch the planet, stitched onto one grid.
+
+Six-hourly model data is not live enough. The satellites go first; atmospheric models only fill the gaps the satellites can't see.
+
+<p class="dim">An earlier version stalled on exactly two things: the data feeds and believable clouds. This version starts with both.</p>
+
+## Numbers
+
+<Readout items={[
+  { value: 5, label: 'Geostationary satellites' },
+  { value: 12, label: 'Monthly base maps' },
+  { value: 1, label: 'Desktop PC' },
+  { value: 0, label: 'Servers, on purpose' },
+]} />
+
+## Pipeline
+
+<Figure caption="Fig. 1 · Cloud layer, v1" source="Satellite list to be confirmed">
+  <svg viewBox="0 0 700 210" role="img" aria-label="Five satellite feeds are reprojected onto one grid, normalised, gap-filled by models, and rendered on the Atlas globe.">
+    <rect x="0" y="10" width="150" height="34" /><text x="12" y="31">GOES-EAST</text>
+    <rect x="0" y="52" width="150" height="34" /><text x="12" y="73">GOES-WEST</text>
+    <rect x="0" y="94" width="150" height="34" /><text x="12" y="115">METEOSAT 0°</text>
+    <rect x="0" y="136" width="150" height="34" /><text x="12" y="157">HIMAWARI</text>
+    <rect x="0" y="178" width="150" height="30" /><text x="12" y="197">METEOSAT IODC</text>
+    <path class="flow" d="M150 27 C200 27 200 105 240 105" />
+    <path class="flow" d="M150 69 C200 69 200 105 240 105" />
+    <path class="flow" d="M150 111 L240 105" />
+    <path class="flow" d="M150 153 C200 153 200 105 240 105" />
+    <path class="flow" d="M150 193 C200 193 200 105 240 105" />
+    <rect x="240" y="82" width="130" height="46" /><text x="252" y="102">OWN GRID</text><text class="m" x="252" y="119">REPROJECT</text>
+    <path class="flow" d="M370 105 L410 105" />
+    <rect x="410" y="82" width="120" height="46" /><text x="422" y="102">NORMALISE</text><text class="m" x="422" y="119">ONE LOOK</text>
+    <rect x="410" y="150" width="120" height="46" /><text x="422" y="170">MODELS</text><text class="m" x="422" y="187">FILL GAPS ONLY</text>
+    <path class="flow" d="M470 150 L470 128" />
+    <path class="flow" d="M530 105 L570 105" />
+    <rect x="570" y="82" width="130" height="46" /><text x="582" y="102">ATLAS</text><text class="m" x="582" y="119">CESIUMJS GLOBE</text>
+  </svg>
+</Figure>
+
+## Spec
+
+<Spec rows={[
+  ['Engine', 'CesiumJS'],
+  ['Base imagery', 'Blue Marble, 12 monthly mosaics, self-hosted'],
+  ['Live layer', 'Clouds only (v1). Air traffic later.'],
+  ['Sources', 'Five geostationary satellites, models as fill'],
+  ['Runs on', 'One desktop PC. No dedicated hardware yet.'],
+  ['Resolution', 'Enough. Tiling tens of gigabytes was tried once.'],
+]} />
+
+## Media
+
+<MediaPair items={[
+  { caption: 'Screen recording · v1 clouds over Europe' },
+  { caption: 'Photo · Atlas running on the desk' },
+]} />
+
+## Flight record
+
+<FlightRecord entries={[
+  { when: 'Earlier', state: 'done', text: 'First version built out of boredom. Stalled on live feeds and clouds that looked like clouds.' },
+  { when: '2026-10', state: 'now', text: 'Revived. Weather layer first; all five satellites from day one.' },
+  { when: 'Next', state: 'next', text: 'Satellite feeds on one grid, normalised, no visible seams.' },
+]} />

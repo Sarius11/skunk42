@@ -1,0 +1,79 @@
+---
+import '@fontsource/archivo/400.css';
+import '@fontsource/archivo/600.css';
+import '@fontsource/archivo/700.css';
+import '@fontsource/archivo/800.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getProjects, litCount } from '../lib/projects';
+import { SITE } from '../site.config';
+
+interface Props {
+  /** Page name; the tab reads "Skunk42 — <title>". */
+  title?: string;
+  description?: string;
+  /** Path of the share card, relative to the site root. */
+  ogImage?: string;
+  active?: 'index' | 'about';
+  /** Home lets the hero run under the transparent header. */
+  home?: boolean;
+  anomaly?: boolean;
+}
+const { title, description = SITE.description, ogImage = '/og-default.png', active, home = false, anomaly = false } = Astro.props;
+
+const fullTitle = title ? `${SITE.name} — ${title}` : SITE.name;
+const site = Astro.site ?? new URL(`https://${SITE.domain}`);
+const canonical = new URL(Astro.url.pathname, site);
+const og = new URL(ogImage, site);
+const lit = litCount(await getProjects());
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b0b0c" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('s42-lights');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body class:list={{ home }}>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header active={active} litCount={lit} anomaly={anomaly} />
+    {!home && <div class="hdr-spacer" aria-hidden="true"></div>}
+    <main id="main"><slot /></main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .hdr-spacer { height: var(--hdr-h); }
+</style>

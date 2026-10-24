@@ -1,0 +1,9 @@
+---
+// The master mark. Ink by default; signal only by deliberate decision (home hero, a launch moment).
+interface Props {
+  size?: number;
+  signal?: boolean;
+}
+const { size = 17, signal = false } = Astro.props;
+---
+<span class:list={['wm', { 'wm--signal': signal }]} style={`font-size:${size}px`} aria-label="Skunk42">Skunk<span>42</span></span>

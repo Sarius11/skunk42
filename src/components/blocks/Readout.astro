@@ -1,0 +1,53 @@
+---
+// Readout: two to four big numbers in the data style. Numeric values count up when they come into view.
+interface Props {
+  items: { value: number | string; label: string }[];
+}
+const { items } = Astro.props;
+const width = (v: number | string) => Math.max(2, String(v).length);
+---
+<div class="ro" style={`--cols:${items.length}`}>
+  {items.map((it) => (
+    <div>
+      {typeof it.value === 'number'
+        ? <span class="n" data-to={it.value} data-w={width(it.value)}>{it.value}</span>
+        : <span class="n">{it.value}</span>}
+      <span class="mono">{it.label}</span>
+    </div>
+  ))}
+</div>
+
+<style>
+  .ro { display: grid; grid-template-columns: repeat(var(--cols), 1fr); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); margin-bottom: 16px; }
+  .ro > div { padding: 22px 16px 18px; border-left: 1px solid var(--hairline); }
+  .ro > div:first-child { border-left: 0; padding-left: 0; }
+  .n { font-family: var(--font-mono); font-size: 44px; line-height: 1; display: block; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
+  @media (max-width: 600px) {
+    .ro { grid-template-columns: 1fr 1fr; }
+    .ro > div:nth-child(odd) { border-left: 0; padding-left: 0; }
+    .ro > div:nth-child(n + 3) { border-top: 1px solid var(--hairline); }
+    .n { font-size: 36px; }
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const pad = (v: number, w: number) => String(v).padStart(w, '0');
+  document.querySelectorAll<HTMLElement>('.ro').forEach((ro) => {
+    const nums = [...ro.querySelectorAll<HTMLElement>('.n[data-to]')];
+    if (reduce || !nums.length) return;
+    nums.forEach((n) => (n.textContent = pad(0, +n.dataset.w!)));
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const s = performance.now();
+      const step = (t: number) => {
+        const k = Math.min(1, (t - s) / 1000);
+        nums.forEach((n) => (n.textContent = pad(Math.round(+n.dataset.to! * k), +n.dataset.w!)));
+        if (k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, { rootMargin: '0px 0px -60px 0px' });
+    io.observe(ro);
+  });
+</script>

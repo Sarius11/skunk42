@@ -1,0 +1,111 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import StatusBlock from '../components/StatusBlock.astro';
+import Visual from '../components/Visual.astro';
+import Toc from '../components/Toc.astro';
+import { blocks } from '../components/blocks';
+import { getProjects, divisionOf, pad2, type Project } from '../lib/projects';
+import { statusOf } from '../lib/status';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      prev: projects[(i - 1 + projects.length) % projects.length],
+      next: projects[(i + 1) % projects.length],
+      siblings: projects.filter((p) => divisionOf(p) === divisionOf(project)),
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  prev: Project;
+  next: Project;
+  siblings: Project[];
+}
+const { project, prev, next, siblings } = Astro.props;
+const d = project.data;
+const s = statusOf(d.status);
+const division = divisionOf(project);
+const { Content, headings } = await render(project);
+const toc = headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text }));
+const position = `${division === 'labs' ? 'Labs' : 'Studios'} · ${pad2(siblings.indexOf(project) + 1)} of ${pad2(siblings.length)}`;
+const many = prev.id !== project.id;
+---
+<Base title={d.title} description={`${d.designation} · ${d.lede}`} ogImage={`/og/${project.id}.png`} active="index">
+  <div class="wrap">
+    <div class="crumb">
+      <a class="mono back" href="/">← Index</a>
+      <span class="mono">{position}</span>
+    </div>
+
+    <div class="top">
+      <div>
+        <span class="code dsg">{d.designation} · {division.toUpperCase()}</span>
+        <h1 class="title">{d.title}</h1>
+        <p class="lede">{d.lede}</p>
+      </div>
+      <StatusBlock
+        code={d.status}
+        rows={[
+          { label: 'Phase', value: d.phaseNote ?? s.line },
+          { label: 'Started', value: d.started ?? '—', mono: true },
+          { label: 'Last test', value: d.lastTest ?? '—', mono: true },
+          { label: 'Next milestone', value: d.nextMilestone },
+          { label: 'Known issues', value: d.knownIssues },
+        ]}
+      />
+    </div>
+
+    <Visual project={project} variant="hero" />
+
+    <div class="doc-body">
+      {toc.length > 0 ? <Toc items={toc} /> : <div></div>}
+      <article class="prose">
+        <Content components={blocks} />
+      </article>
+    </div>
+
+    {many && (
+      <nav class="next" aria-label="Other programs">
+        <a href={`/${prev.id}/`}><span class="mono">← Previous</span><b>{prev.data.title}</b></a>
+        <a href={`/${next.id}/`}><span class="mono">Next →</span><b>{next.data.title}</b></a>
+      </nav>
+    )}
+  </div>
+</Base>
+
+<style>
+  .crumb { display: flex; justify-content: space-between; gap: 16px; padding-top: 28px; }
+  .back:hover { color: var(--ink); }
+  .top { display: grid; grid-template-columns: 1fr 400px; gap: 48px; padding: 40px 0; align-items: end; }
+  .dsg { font-size: 13px; }
+  .title {
+    font-weight: 800; font-size: clamp(48px, 9vw, 96px); line-height: 0.92; text-transform: uppercase;
+    letter-spacing: 0.04em; margin: 12px 0 18px; overflow-wrap: anywhere;
+  }
+  .lede { font-size: 20px; line-height: 1.45; color: var(--ink-muted); max-width: 520px; }
+  .next { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hairline); margin-top: 24px; }
+  .next a { padding: 28px 0; display: block; }
+  .next a:last-child { text-align: right; border-left: 1px solid var(--hairline); }
+  .next b { display: block; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; font-size: 26px; line-height: 1.1; margin-top: 8px; transition: color 0.2s; }
+  .next a:hover b { color: var(--signal); }
+  @media (max-width: 900px) {
+    .top { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 600px) {
+    .lede { font-size: 18px; }
+    .next b { font-size: 18px; }
+    .next a:first-child { padding-right: 12px; }
+    .next a:last-child { padding-left: 12px; }
+  }
+</style>
+
+<script>
+  import { mountAllGlobes } from '../scripts/globe';
+  mountAllGlobes();
+</script>

@@ -1,0 +1,45 @@
+---
+// The sticky side index. It follows the reader as they scroll.
+interface Props {
+  items: { id: string; label: string }[];
+}
+const { items } = Astro.props;
+---
+<nav class="toc" aria-label="On this page" data-toc>
+  {items.map((it, i) => <a href={`#${it.id}`} data-t={it.id} class:list={{ on: i === 0 }}>{it.label}</a>)}
+</nav>
+
+<style>
+  .toc { position: sticky; top: 84px; align-self: start; }
+  .toc a {
+    display: block; padding: 7px 0; border-bottom: 1px solid var(--hairline); color: var(--ink-muted);
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--ink); }
+  .toc a.on { color: var(--ink); }
+  .toc a.on::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--signal); margin-right: 8px; vertical-align: 1px; }
+  @media (max-width: 900px) { .toc { display: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-toc]').forEach((toc) => {
+    const links = [...toc.querySelectorAll<HTMLAnchorElement>('a[data-t]')];
+    const targets = links.map((l) => document.getElementById(l.dataset.t!)).filter(Boolean) as HTMLElement[];
+    const update = () => {
+      let cur = links[0]?.dataset.t;
+      const line = Math.max(140, window.innerHeight * 0.35);
+      for (const t of targets) if (t.getBoundingClientRect().top <= line) cur = t.id;
+      // At the very bottom the last section may never reach the line.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) cur = links.at(-1)?.dataset.t;
+      links.forEach((l) => {
+        const on = l.dataset.t === cur;
+        l.classList.toggle('on', on);
+        if (on) l.setAttribute('aria-current', 'location');
+        else l.removeAttribute('aria-current');
+      });
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  });
+</script>

@@ -1,0 +1,19 @@
+---
+// Spec table: key/value rows, hairline-ruled, like a datasheet.
+interface Props {
+  rows: [string, string][];
+}
+const { rows } = Astro.props;
+---
+<dl class="spec">
+  {rows.map(([k, v]) => (
+    <div><dt class="mono">{k}</dt><dd>{v}</dd></div>
+  ))}
+</dl>
+
+<style>
+  .spec { border-top: 1px solid var(--hairline); margin-bottom: 16px; }
+  .spec > div { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+  dd { font-size: 15px; line-height: 1.45; }
+  @media (max-width: 600px) { .spec > div { grid-template-columns: 1fr; gap: 4px; } }
+</style>

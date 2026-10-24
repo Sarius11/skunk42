@@ -1,0 +1,127 @@
+@import './tokens.css';
+
+/* Theme extras that the token set does not carry: header glass and the hero media well. */
+:root, [data-theme="dark"] {
+  --glass: rgba(11, 11, 12, 0.82);
+  --media-well: #050506;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --glass: rgba(242, 241, 237, 0.85);
+  --media-well: #e9e7e1;
+  color-scheme: light;
+}
+:root {
+  --gutter: var(--space-8);
+  --max: 1280px;
+  --hdr-h: 72px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (max-width: 760px) {
+  :root { --gutter: var(--space-4); --hdr-h: 56px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+body {
+  margin: 0;
+  background: var(--surface-000);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 25px;
+  transition: background-color 0.35s, color 0.35s;
+  overflow-x: hidden;
+}
+h1, h2, h3, h4, p, dl, dd, ol, ul, figure, blockquote { margin: 0; }
+ol, ul { padding: 0; }
+a { color: inherit; text-decoration: none; }
+img, svg, video, canvas { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+.skip {
+  position: absolute; left: var(--gutter); top: -100px; z-index: 50;
+  background: var(--ink); color: var(--surface-000); padding: 8px 12px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.skip:focus { top: 8px; }
+
+.wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* The mono label voice: designations, field names, nav meta. */
+.mono {
+  font-family: var(--font-mono); font-size: 11px; line-height: 16px;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted);
+}
+.mono b { color: var(--ink); font-weight: 500; }
+.code { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; color: var(--signal); }
+
+/* The master mark. SKUNK 800, 42 400, tracking 0.08em, one word. Never change these. */
+.wm {
+  font-family: var(--font-sans); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  line-height: 1; white-space: nowrap; color: var(--ink);
+}
+.wm > span { font-weight: 400; }
+.wm--signal > span { color: var(--signal); }
+
+/* Lamps. Shape always carries the state as well as colour. */
+.lamp {
+  display: inline-block; flex: none; position: relative;
+  width: 8px; height: 8px; margin-right: 8px; vertical-align: 0;
+}
+.lamp--live { background: var(--signal); }
+.lamp--off { box-shadow: inset 0 0 0 1px var(--ink-muted); }
+.lamp--hold { box-shadow: inset 0 0 0 1.5px var(--signal); }
+.lamp--go { background: var(--nominal); }
+.lamp--upg { background: linear-gradient(90deg, var(--nominal) 0 50%, var(--signal) 50%); }
+.lamp--anom { background: var(--signal); animation: s42-blink 1s steps(2, start) infinite; }
+.lamp--fix { box-shadow: inset 0 0 0 1.5px var(--signal); background: linear-gradient(0deg, var(--signal) 0 50%, transparent 50%); }
+.lamp--recert { box-shadow: inset 0 0 0 1.5px var(--nominal); }
+.lamp--ret { background: var(--ink-muted); }
+.lamp--lost::before, .lamp--lost::after {
+  content: ""; position: absolute; left: -1px; top: 3px; width: 10px; height: 1.5px;
+  background: var(--ink-muted); transform: rotate(45deg);
+}
+.lamp--lost::after { transform: rotate(-45deg); }
+@keyframes s42-blink { to { visibility: hidden; } }
+
+/* Shared panel: hairline frame, surface-100, square. */
+.panel { border: 1px solid var(--hairline); background: var(--surface-100); }
+
+/* The two-column body used by Project and About: sticky side index + content. */
+.doc-body { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; padding: 72px 0 0; }
+@media (max-width: 900px) { .doc-body { grid-template-columns: minmax(0, 1fr); padding-top: 48px; } }
+
+/* Long-form text set by the Text block (plain Markdown) and About. */
+.prose > h2, .doc-section > h2 {
+  font-weight: 700; font-size: 28px; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 20px;
+}
+.prose > h2:not(:first-child) { margin-top: 80px; }
+.prose > p, .doc-section p.txt { font-size: 17px; line-height: 1.65; max-width: 640px; margin-bottom: 16px; }
+.prose > p.dim, .doc-section p.dim { color: var(--ink-muted); }
+.prose > ul, .prose > ol { max-width: 640px; padding-left: 20px; margin-bottom: 16px; font-size: 17px; line-height: 1.65; }
+.prose a, .doc-section .txt a { text-decoration: underline; text-decoration-color: var(--hairline); text-underline-offset: 3px; }
+.prose a:hover { text-decoration-color: var(--signal); }
+.doc-section { margin-bottom: 80px; }
+
+/* Reveal-on-view helper for staggered lists. */
+[data-reveal] > * { opacity: 0; transform: translateY(8px); transition: opacity 0.5s, transform 0.5s; }
+[data-reveal] > .in { opacity: 1; transform: none; }
+
+/* Buttons: square, hairline, mono. */
+.btn {
+  display: inline-block; border: 1px solid var(--ink); padding: 10px 16px; background: none; cursor: pointer;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
+  transition: background-color 0.2s, color 0.2s;
+}
+.btn:hover { background: var(--ink); color: var(--surface-000); }
+.btn--ghost { border-color: var(--hairline); color: var(--ink-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  [data-reveal] > * { opacity: 1; transform: none; }
+}

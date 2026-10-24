@@ -1,0 +1,17 @@
+---
+import Media, { type MediaItem } from './Media.astro';
+
+// Media pair: two side by side, such as before/after or render/photo.
+interface Props {
+  items: [MediaItem, MediaItem];
+}
+const { items } = Astro.props;
+---
+<div class="pair">
+  {items.map((m) => <Media {...m} compact />)}
+</div>
+
+<style>
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 600px) { .pair { grid-template-columns: 1fr; } }
+</style>

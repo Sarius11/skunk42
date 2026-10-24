@@ -1,0 +1,36 @@
+---
+// Media: one image or video with a mono caption. With no src it renders a dashed slot
+// naming what is still to be supplied.
+export interface MediaItem {
+  src?: string;
+  alt?: string;
+  caption: string;
+  /** Treat src as a video. */
+  video?: boolean;
+}
+interface Props extends MediaItem {
+  /** Inside a pair the slots are shorter. */
+  compact?: boolean;
+}
+const { src, alt = '', caption, video = false, compact = false } = Astro.props;
+---
+<figure class:list={['media', { compact }]}>
+  {src
+    ? video
+      ? <video src={src} muted loop playsinline autoplay controls aria-label={alt || caption}></video>
+      : <img src={src} alt={alt} loading="lazy" />
+    : <div class="slot"><span class="mono">{caption}<br />To be supplied</span></div>}
+  {src && <figcaption class="mono">{caption}</figcaption>}
+</figure>
+
+<style>
+  .media { margin-bottom: 16px; }
+  .media img, .media video { width: 100%; height: auto; border: 1px solid var(--hairline); background: var(--media-well); }
+  figcaption { margin-top: 10px; }
+  .slot {
+    height: 360px; border: 1px dashed var(--hairline); display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 20px;
+  }
+  .compact .slot { height: 240px; }
+  .compact { margin-bottom: 0; }
+</style>

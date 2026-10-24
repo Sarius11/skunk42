@@ -1,0 +1,29 @@
+---
+// Figure: a chart or diagram with a figure number and a source line.
+// Inline SVG in the slot can use the classes .m (muted label) and .flow (animated signal path).
+interface Props {
+  caption: string;
+  source?: string;
+}
+const { caption, source } = Astro.props;
+---
+<figure class="fig">
+  <div class="art"><slot /></div>
+  <figcaption class="figcap">
+    <span class="mono">{caption}</span>
+    {source && <span class="mono">{source}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .fig { border: 1px solid var(--hairline); padding: 24px 20px 16px; margin-bottom: 16px; }
+  .art { overflow-x: auto; }
+  .art :global(svg) { width: 100%; min-width: 560px; height: auto; display: block; }
+  .art :global(img) { width: 100%; height: auto; }
+  .art :global(rect) { fill: var(--surface-100); stroke: var(--hairline); }
+  .art :global(text) { fill: var(--ink); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; }
+  .art :global(text.m) { fill: var(--ink-muted); font-size: 9.5px; }
+  .art :global(.flow) { fill: none; stroke: var(--signal); stroke-width: 1.5; stroke-dasharray: 4 6; animation: flow 1.2s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -20; } }
+  .figcap { display: flex; justify-content: space-between; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--hairline); }
+</style>

@@ -1,0 +1,18 @@
+---
+// Excerpt: a long quote from the work itself, for the books.
+interface Props {
+  source?: string;
+}
+const { source } = Astro.props;
+---
+<figure class="ex">
+  <blockquote><slot /></blockquote>
+  {source && <figcaption class="mono">{source}</figcaption>}
+</figure>
+
+<style>
+  .ex { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); padding: 28px 0; margin-bottom: 16px; }
+  blockquote { max-width: 640px; font-size: 21px; line-height: 1.55; }
+  blockquote :global(p + p) { margin-top: 14px; }
+  figcaption { margin-top: 18px; }
+</style>

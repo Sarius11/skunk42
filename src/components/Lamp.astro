@@ -1,0 +1,13 @@
+---
+import { statusOf, type StatusCode, type LampShape } from '../lib/status';
+
+// A status lamp. Pass a status code, or a raw shape for lamps that are not a program's status.
+// Decorative by default: the code and name always sit next to it in text.
+interface Props {
+  code?: StatusCode;
+  shape?: LampShape;
+}
+const { code, shape } = Astro.props;
+const lamp = shape ?? (code ? statusOf(code).lamp : 'off');
+---
+<span class={`lamp lamp--${lamp}`} aria-hidden="true"></span>

@@ -1,0 +1,207 @@
+---
+import Base from '../layouts/Base.astro';
+import Toc from '../components/Toc.astro';
+import Readout from '../components/blocks/Readout.astro';
+import Spec from '../components/blocks/Spec.astro';
+import { SITE } from '../site.config';
+
+const toc = [
+  { id: 'name', label: 'The name' },
+  { id: 'operator', label: 'The operator' },
+  { id: 'principles', label: 'Principles' },
+  { id: 'contact', label: 'Contact' },
+  { id: 'paperwork', label: 'Paperwork' },
+];
+
+const principles = [
+  ['Over-engineer, for good measure.', 'If it is worth building, it is worth building twice as strong as it needs to be.'],
+  ['Test before you announce.', 'Nothing gets called operational until it has survived contact with reality.'],
+  ['Known issues are listed, not hidden.', 'Every project page says what is broken. It saves everyone time.'],
+  ['No committee.', 'Decisions are made by the person holding the wrench.'],
+  ['Nothing here is for sale.', 'If that changes, it will be a different website.'],
+];
+---
+<Base title="About" description="Skunk 42 is a hangar for after-hours projects: simulations, models, machines and books. Nothing here is for sale." active="about">
+  <div class="wrap">
+    <div class="crumb">
+      <a class="mono back" href="/">← Index</a>
+      <span class="mono">S42-000 · The hangar</span>
+    </div>
+    <div class="top">
+      <span class="code dsg">S42-000 · ABOUT</span>
+      <h1 class="title">About</h1>
+      <p class="lede">Skunk 42 is a hangar for after-hours projects: <b>simulations, models, machines and books.</b> Nothing here is for sale. Most of it works.</p>
+    </div>
+
+    <div class="doc-body">
+      <Toc items={toc} />
+      <div>
+        <section id="name" class="doc-section">
+          <h2>The name</h2>
+          <div class="halves">
+            <div>
+              <span class="mono">Half one</span>
+              <span class="big">SKUNK</span>
+              <p>For the Skunk Works: the small, unofficial engineering shop that built aircraft faster than the paperwork could follow. Small team, no committee, serious work.</p>
+            </div>
+            <div>
+              <span class="mono">Half two</span>
+              <span class="big thin">42</span>
+              <p>The answer to life, the universe and everything, per Douglas Adams. The question is still being worked on.</p>
+            </div>
+          </div>
+          <p class="txt dim">Put together: serious engineering, applied to questions nobody assigned.</p>
+        </section>
+
+        <section id="operator" class="doc-section">
+          <h2>The operator</h2>
+          <div class="op">
+            <div class="photo" role="img" aria-label="Photo of the operator, to be supplied">
+              <span class="cross" aria-hidden="true"></span>
+              <span class="mono rec"><span class="lamp lamp--live" aria-hidden="true"></span>Rec</span>
+              <span class="mono cap">Photo · 4:5 · to be supplied</span>
+            </div>
+            <div>
+              <p class="who">Adam Nagy</p>
+              <p class="txt">Started two companies at sixteen, which is either early or reckless. At twenty-two, ran operations for a 110-person rocketry organisation and built its machinery from zero: procurement, safety systems, an ERP, a brand book. Once closed the National Gallery for a day to host astronauts.</p>
+              <p class="txt">Day job: the front office of an airline's treasury, where fuel, currencies and interest rates get hedged. Skunk 42 is what happens after the markets close.</p>
+              <div class="spec-wrap">
+                <Spec rows={[
+                  ['Based', 'Budapest. Originally Pécs.'],
+                  ['Education', 'MSc Business Development, Corvinus · BSc International Economics, ELTE and Corvinus'],
+                  ['Rockets', 'Head of Operations, 110-person rocketry organisation'],
+                  ['Day job', 'Airline treasury, front office'],
+                  ['In progress', 'FRM (Financial Risk Manager) certification'],
+                ]} />
+              </div>
+              <Readout items={[
+                { value: 16, label: 'Age at first company' },
+                { value: 110, label: 'People in the rocket org' },
+                { value: 1, label: 'National Gallery, closed' },
+              ]} />
+            </div>
+          </div>
+        </section>
+
+        <section id="principles" class="doc-section">
+          <h2>Operating principles</h2>
+          <ol class="rules" data-reveal>
+            {principles.map(([title, desc], i) => (
+              <li><span class="code">{String(i + 1).padStart(2, '0')}</span><span><b>{title}</b><span class="d">{desc}</span></span></li>
+            ))}
+          </ol>
+        </section>
+
+        <section id="contact" class="doc-section">
+          <h2>Contact</h2>
+          <div class="contact">
+            <div class="ccard panel">
+              <span class="mono">Mail · forwarded</span>
+              <a class="mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+              <span class="mono">Response time depends on the launch window.</span>
+            </div>
+            <ul class="ccard panel links">
+              {SITE.social.map((s) => (
+                <li>{s.url
+                  ? <a href={s.url} rel="me noopener" target="_blank">{s.name} <span aria-hidden="true">↗</span></a>
+                  : <span class="pending">{s.name} <span>Soon</span></span>}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section id="paperwork" class="doc-section">
+          <h2>Paperwork</h2>
+          <div class="paper">
+            <div>
+              <h3>Imprint</h3>
+              <p>Skunk 42 is the personal website of Adam Nagy, Budapest, Hungary. It is a non-commercial site and offers no services for payment.</p>
+              <p>Contact: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+            </div>
+            <div>
+              <h3>Privacy</h3>
+              <p>This site sets no cookies, runs no analytics and tracks nobody. Fonts are served from this domain.</p>
+              <p>It is hosted on GitHub Pages, which keeps standard server logs, including visitors' IP addresses, under GitHub's own privacy statement.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .crumb { display: flex; justify-content: space-between; gap: 16px; padding-top: 28px; }
+  .back:hover { color: var(--ink); }
+  .top { padding: 40px 0 48px; border-bottom: 1px solid var(--hairline); }
+  .dsg { font-size: 13px; }
+  .title { font-weight: 800; font-size: clamp(48px, 9vw, 96px); line-height: 0.92; text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 20px; }
+  .lede { font-size: 22px; line-height: 1.45; color: var(--ink-muted); max-width: 720px; }
+  .lede b { color: var(--ink); font-weight: 400; }
+
+  .halves { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--hairline); margin-bottom: 24px; }
+  .halves > div { padding: 26px 24px; }
+  .halves > div + div { border-left: 1px solid var(--hairline); }
+  .big { font-weight: 800; font-size: 52px; letter-spacing: 0.08em; line-height: 1; display: block; margin: 10px 0 14px; }
+  .big.thin { font-weight: 400; }
+  .halves p { font-size: 15px; line-height: 1.55; color: var(--ink-muted); }
+
+  .op { display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: start; }
+  .photo { aspect-ratio: 4 / 5; border: 1px solid var(--hairline); position: relative; background: var(--surface-100); overflow: hidden; }
+  .photo::before, .photo::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--ink); }
+  .photo::before { left: 10px; top: 10px; border-right: 0; border-bottom: 0; }
+  .photo::after { right: 10px; bottom: 10px; border-left: 0; border-top: 0; }
+  .photo .cap { position: absolute; left: 14px; right: 14px; bottom: 12px; }
+  .photo .rec { position: absolute; right: 14px; top: 12px; }
+  .rec .lamp { animation: s42-blink 1s steps(2, start) infinite; }
+  .photo .cross { position: absolute; left: 50%; top: 42%; width: 28px; height: 28px; margin: -14px; border: 1px solid var(--hairline); border-radius: var(--radius-round); }
+  .who { font-weight: 800; font-size: 30px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+  .spec-wrap { margin: 22px 0 28px; }
+
+  .rules { list-style: none; border-top: 1px solid var(--hairline); }
+  .rules li { display: grid; grid-template-columns: 70px 1fr; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--hairline); }
+  .rules b { display: block; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 17px; margin-bottom: 4px; }
+  .rules .d { font-size: 15px; color: var(--ink-muted); line-height: 1.5; }
+
+  .contact { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ccard { padding: 22px; }
+  .mail { font-family: var(--font-mono); font-size: 20px; display: block; margin: 12px 0 8px; overflow-wrap: anywhere; transition: color 0.2s; }
+  .mail:hover { color: var(--signal); }
+  .links { list-style: none; }
+  .links a, .links .pending {
+    display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--hairline);
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .links a:hover { color: var(--signal); }
+  .links .pending { color: var(--ink-muted); }
+
+  .paper { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .paper h3 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; margin-bottom: 10px; }
+  .paper p { font-size: 14px; line-height: 1.6; color: var(--ink-muted); margin-bottom: 8px; }
+  .paper a { text-decoration: underline; text-decoration-color: var(--hairline); text-underline-offset: 3px; }
+
+  @media (max-width: 760px) {
+    .halves, .contact, .paper { grid-template-columns: 1fr; }
+    .halves > div + div { border-left: 0; border-top: 1px solid var(--hairline); }
+    .op { grid-template-columns: 1fr; }
+    .photo { max-width: 240px; }
+    .lede { font-size: 18px; }
+    .rules li { grid-template-columns: 44px 1fr; }
+  }
+</style>
+
+<script>
+  // Principles file in one by one as they come into view.
+  document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((list) => {
+    const items = [...list.children] as HTMLElement[];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        setTimeout(() => el.classList.add('in'), items.indexOf(el) * 90);
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -40px 0px' });
+    items.forEach((li) => io.observe(li));
+  });
+</script>

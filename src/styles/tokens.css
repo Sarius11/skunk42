@@ -1,0 +1,39 @@
+/* Skunk 42 — generated from tokens.json (design system: claude.ai/artifact/JE8YC9qj2zrKDRV9XtfeXF).
+   Keep in sync with the design system; do not hand-tune values here. */
+:root, [data-theme="dark"] {
+  --surface-000: #0b0b0c;
+  --surface-100: #141415;
+  --ink: #ededea;
+  --ink-muted: #8a8a86;
+  --hairline: #2a2a2b;
+  --signal: #ff5a1f;
+  --nominal: #3ecf72;
+}
+[data-theme="light"] {
+  --surface-000: #f2f1ed;
+  --surface-100: #fbfaf7;
+  --ink: #111111;
+  --ink-muted: #6b6a66;
+  --hairline: #cfccc5;
+  --signal: #b93d0b;
+  --nominal: #1f7a3f;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-14: 56px;
+  --radius-none: 0px;
+  --radius-round: 50%;
+  --font-sans: Archivo, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+.t-hero { font-family: var(--font-sans); font-size: 56px; line-height: 0.98; font-weight: 800; letter-spacing: 0.005em; }
+.t-project-title { font-family: var(--font-sans); font-size: 30px; line-height: 1.05; font-weight: 800; letter-spacing: 0.06em; }
+.t-section { font-family: var(--font-sans); font-size: 28px; line-height: 1.1; font-weight: 700; letter-spacing: -0.03em; }
+.t-body { font-family: var(--font-sans); font-size: 16px; line-height: 25px; font-weight: 400; }
+.t-small { font-family: var(--font-sans); font-size: 13px; line-height: 21px; font-weight: 400; }
+.t-label { font-family: var(--font-mono); font-size: 11px; line-height: 16px; font-weight: 400; letter-spacing: 0.08em; }
+.t-data { font-family: var(--font-mono); font-size: 24px; line-height: 1.25; font-weight: 400; }
