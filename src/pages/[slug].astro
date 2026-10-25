@@ -77,6 +77,18 @@ const photoStyle = [
         <span class="code dsg">{d.designation} · {division.toUpperCase()}</span>
         <h1 class="title">{d.title}</h1>
         <p class="lede">{d.lede}</p>
+        {d.access && (
+          <div class="access-row">
+            <a class="btn access" href={d.access} target="_blank" rel="noopener">
+              Access <span aria-hidden="true">↗</span><span class="vh"> {d.title} (opens in a new tab)</span>
+            </a>
+            {d.accessPassword && (
+              <p class="mono access-note">
+                <span class="lock" aria-hidden="true"></span><span>Password protected. For the password, <a href="/about/#contact">get in touch</a>.</span>
+              </p>
+            )}
+          </div>
+        )}
       </div>
       <StatusBlock
         code={d.status}
@@ -197,6 +209,15 @@ const photoStyle = [
     letter-spacing: 0.04em; margin: 12px 0 18px; overflow-wrap: anywhere;
   }
   .lede { font-size: 20px; line-height: 1.45; color: var(--ink-muted); max-width: 520px; }
+  .access-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin-top: 24px; }
+  .access { padding: 12px 20px; font-size: 12px; }
+  .access-note { display: flex; align-items: center; gap: 8px; }
+  .access-note a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--hairline); text-underline-offset: 3px; transition: text-decoration-color 0.2s; }
+  .access-note a:hover { text-decoration-color: var(--signal); }
+  /* A small padlock drawn in CSS: a hollow shackle over a solid body. */
+  .lock { position: relative; width: 9px; height: 7px; margin-top: 4px; background: var(--ink-muted); flex: none; }
+  .lock::before { content: ""; position: absolute; left: 1.5px; bottom: 6px; width: 6px; height: 5px; border: 1.5px solid var(--ink-muted); border-bottom: 0; box-sizing: border-box; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .next { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hairline); margin-top: 24px; }
   .next a { padding: 28px 0; display: block; }
   .next a:last-child { text-align: right; border-left: 1px solid var(--hairline); }

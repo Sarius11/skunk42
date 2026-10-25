@@ -27,6 +27,8 @@ started: "2026-11"            # quote dates
 lastTest: "2026-11-20"
 nextMilestone: What happens next
 knownIssues: A plain statement of a real hazard.
+access: https://name.skunk42.com   # optional: an Access ↗ button under the lede
+accessPassword: true          # adds "Password protected. For the password, get in touch."
 featured: false               # up to two get a card on Home
 visual: plate                 # globe | grid | plate (title plate for text-only work)
 hero: true                    # false hides the big panel on the program page

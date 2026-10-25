@@ -23,6 +23,10 @@ const projects = defineCollection({
     nextMilestone: z.string(),
     /** A plain statement of a real hazard. */
     knownIssues: z.string(),
+    /** Where the program itself runs, if it can be visited. Shown as an Access button under the lede. */
+    access: z.string().url().optional(),
+    /** The access link asks for a password; a note beside the button points visitors to the contact details. */
+    accessPassword: z.boolean().default(false),
     /** Up to two featured programs get a card on Home. */
     featured: z.boolean().default(false),
     /** What the program shows of itself: a live globe, a map grid, or a title plate for text-only work. */
