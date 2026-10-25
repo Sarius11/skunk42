@@ -3,52 +3,93 @@ designation: S42-L01
 title: Atlas
 tagline: A live Earth, seen from orbit.
 lede: A small digital Earth on the desk, showing the weather as it is right now, not as it was six hours ago.
-status: P3
+status: S1
 started: "2026-10"
-nextMilestone: Five satellites, one grid, no seams
-knownIssues: Clouds are not yet volumetric. They are, technically, wallpaper.
+nextMilestone: Keep it operational
+knownIssues: None reported. Yet.
 featured: true
 visual: globe
+heroImage: ../../assets/atlas-render.png
+heroAlt: Atlas rendering the Earth from space. Live clouds swirl over a blue ocean on the day side; past the terminator, city lights glow orange on the night side.
+heroLabel: Atlas · live render
+heroPlacement: right
+heroCredit: Rendered by Atlas · base imagery NASA Blue Marble
+# Alternative: the ISS night photo.
+# heroImage: ../../assets/ISS075-E-227351.jpg
+# heroAlt: Long exposure from the International Space Station at night. A green band of airglow traces the horizon, city lights streak across the dark Earth below, and part of the station hangs in the upper right.
+# heroLabel: ISS075-E-227351
+# heroFocus: 50% 40%
+# heroTrim:
+#   left: 11
+# heroCredit: Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center
+# heroCreditUrl: https://eol.jsc.nasa.gov/SearchPhotos/photo.pl?mission=ISS075&roll=E&frame=227351
 ---
 
 ## Brief
 
 A three-dimensional Earth, built on CesiumJS and dressed in NASA's Blue Marble imagery, one cloud-free mosaic for each month. On top of it goes the weather: real clouds from the five geostationary satellites that watch the planet, stitched onto one grid.
 
-Six-hourly model data is not live enough. The satellites go first; atmospheric models only fill the gaps the satellites can't see.
+Six-hourly model data is not live enough on its own. The satellites see the clouds; the GFS weather model tells them apart from the ground, gives them a top and a base, moves them between frames and covers the poles the satellites can't see.
 
-<p class="dim">An earlier version stalled on exactly two things: the data feeds and believable clouds. This version starts with both.</p>
 
 ## Numbers
 
 <Readout items={[
-  { value: 5, label: 'Geostationary satellites' },
-  { value: 12, label: 'Monthly base maps' },
-  { value: 1, label: 'Desktop PC' },
-  { value: 0, label: 'Servers, on purpose' },
+  { value: 50000, suffix: '+', label: 'Individually tracked objects' },
+  { value: 60, unit: 'GB', label: 'Swallowed every day.' },
+  { value: 0, prefix: '€', label: 'Monthly bill. ' },
+  { value: 25, suffix: '+', label: 'Data sources' },
 ]} />
 
 ## Pipeline
 
-<Figure caption="Fig. 1 · Cloud layer, v1" source="Satellite list to be confirmed">
-  <svg viewBox="0 0 700 210" role="img" aria-label="Five satellite feeds are reprojected onto one grid, normalised, gap-filled by models, and rendered on the Atlas globe.">
-    <rect x="0" y="10" width="150" height="34" /><text x="12" y="31">GOES-EAST</text>
-    <rect x="0" y="52" width="150" height="34" /><text x="12" y="73">GOES-WEST</text>
-    <rect x="0" y="94" width="150" height="34" /><text x="12" y="115">METEOSAT 0°</text>
-    <rect x="0" y="136" width="150" height="34" /><text x="12" y="157">HIMAWARI</text>
-    <rect x="0" y="178" width="150" height="30" /><text x="12" y="197">METEOSAT IODC</text>
-    <path class="flow" d="M150 27 C200 27 200 105 240 105" />
-    <path class="flow" d="M150 69 C200 69 200 105 240 105" />
-    <path class="flow" d="M150 111 L240 105" />
-    <path class="flow" d="M150 153 C200 153 200 105 240 105" />
-    <path class="flow" d="M150 193 C200 193 200 105 240 105" />
-    <rect x="240" y="82" width="130" height="46" /><text x="252" y="102">OWN GRID</text><text class="m" x="252" y="119">REPROJECT</text>
-    <path class="flow" d="M370 105 L410 105" />
-    <rect x="410" y="82" width="120" height="46" /><text x="422" y="102">NORMALISE</text><text class="m" x="422" y="119">ONE LOOK</text>
-    <rect x="410" y="150" width="120" height="46" /><text x="422" y="170">MODELS</text><text class="m" x="422" y="187">FILL GAPS ONLY</text>
-    <path class="flow" d="M470 150 L470 128" />
-    <path class="flow" d="M530 105 L570 105" />
-    <rect x="570" y="82" width="130" height="46" /><text x="582" y="102">ATLAS</text><text class="m" x="582" y="119">CESIUMJS GLOBE</text>
+<Figure caption="Fig. 1 · Cloud layer, satellite to globe" source="All five on the ~10.5 micron infrared channel" minWidth={860}>
+  <svg viewBox="0 0 1036 272" role="img" aria-label="Five geostationary satellites are reprojected onto one 0.1 degree grid, blended by view angle, turned into 3-D clouds with help from the GFS weather model, encoded as WebP frames every 10 minutes, and rendered on the Atlas globe.">
+    <rect x="0" y="0" width="160" height="46" /><text x="12" y="20">GOES-19 · EAST</text><text class="m" x="12" y="37">75° W</text>
+    <rect x="0" y="56" width="160" height="46" /><text x="12" y="76">GOES-18 · WEST</text><text class="m" x="12" y="93">137° W</text>
+    <rect x="0" y="112" width="160" height="46" /><text x="12" y="132">METEOSAT-12 (MTG)</text><text class="m" x="12" y="149">0°</text>
+    <rect x="0" y="168" width="160" height="46" /><text x="12" y="188">HIMAWARI-9</text><text class="m" x="12" y="205">141° E</text>
+    <rect x="0" y="224" width="160" height="46" /><text x="12" y="244">METEOSAT-9 · IODC</text><text class="m" x="12" y="261">45.5° E</text>
+    <path class="flow" d="M160 23 C190 23 185 135 210 135" />
+    <path class="flow" d="M160 79 C190 79 185 135 210 135" />
+    <path class="flow" d="M160 135 L210 135" />
+    <path class="flow" d="M160 191 C190 191 185 135 210 135" />
+    <path class="flow" d="M160 247 C190 247 185 135 210 135" />
+    <rect x="210" y="112" width="140" height="46" /><text x="222" y="132">OWN GRID</text><text class="m" x="222" y="149">0.1° · 3600 × 1800</text>
+    <path class="flow" d="M350 135 L374 135" />
+    <rect x="374" y="112" width="130" height="46" /><text x="386" y="132">BLEND</text><text class="m" x="386" y="149">BY VIEW ANGLE</text>
+    <path class="flow" d="M504 135 L528 135" />
+    <rect x="528" y="112" width="184" height="46" /><text x="540" y="132">CLOUDS</text><text class="m" x="540" y="149">COVER · TOP · BASE · TYPE</text>
+    <rect x="528" y="196" width="184" height="62" /><text x="540" y="216">GFS MODEL</text><text class="m" x="540" y="233">MASK · HEIGHT · BASE</text><text class="m" x="540" y="248">WIND · POLES</text>
+    <path class="flow" d="M620 196 L620 158" />
+    <path class="flow" d="M712 135 L736 135" />
+    <rect x="736" y="112" width="146" height="46" /><text x="748" y="132">FRAMES</text><text class="m" x="748" y="149">10 MIN · WEBP</text>
+    <path class="flow" d="M882 135 L906 135" />
+    <rect x="906" y="112" width="130" height="46" /><text x="918" y="132">ATLAS</text><text class="m" x="918" y="149">CESIUMJS GLOBE</text>
+  </svg>
+</Figure>
+
+<Figure caption="Fig. 2 · Everything else on the globe" source="Earth and weather above, traffic below" minWidth={860}>
+  <svg viewBox="0 0 1036 384" role="img" aria-label="Other layers and their sources: lightning from GLM on GOES-19 and GOES-18, LI on Meteosat-12, and an estimate for Asia and Australia; fires from VIIRS and MODIS via NASA FIRMS; snow and sea ice from NOAA IMS, GMASI and the NCEP sea-ice analysis; smoke, dust and haze from the GEFS-Aerosols model; aurora from NOAA's OVATION forecast; the surface from NASA Blue Marble and night lights; aircraft from OpenSky; ships from AIS; satellite positions from CelesTrak, plus launches. All feed the Atlas globe.">
+    <rect x="0" y="0" width="640" height="34" /><text x="12" y="21">LIGHTNING</text><text class="m" x="200" y="21">GLM · GOES-19, GOES-18 · LI · METEOSAT-12 · ASIA/AUS ESTIMATE</text>
+    <rect x="0" y="42" width="640" height="34" /><text x="12" y="63">FIRES</text><text class="m" x="200" y="63">VIIRS · NOAA-20, NOAA-21, SUOMI NPP · MODIS · VIA NASA FIRMS</text>
+    <rect x="0" y="84" width="640" height="34" /><text x="12" y="105">SNOW · SEA ICE</text><text class="m" x="200" y="105">NOAA IMS · GMASI · NCEP SEA-ICE ANALYSIS</text>
+    <rect x="0" y="126" width="640" height="34" /><text x="12" y="147">SMOKE · DUST · HAZE</text><text class="m" x="200" y="147">GEFS-AEROSOLS MODEL</text>
+    <rect x="0" y="168" width="640" height="34" /><text x="12" y="189">AURORA</text><text class="m" x="200" y="189">NOAA OVATION FORECAST</text>
+    <rect x="0" y="210" width="640" height="34" /><text x="12" y="231">SURFACE</text><text class="m" x="200" y="231">NASA BLUE MARBLE · NIGHT LIGHTS</text>
+    <rect x="0" y="266" width="640" height="34" /><text x="12" y="287">AIRCRAFT</text><text class="m" x="200" y="287">OPENSKY</text>
+    <rect x="0" y="308" width="640" height="34" /><text x="12" y="329">SHIPS</text><text class="m" x="200" y="329">AIS</text>
+    <rect x="0" y="350" width="640" height="34" /><text x="12" y="371">SATELLITES · LAUNCHES</text><text class="m" x="200" y="371">CELESTRAK POSITIONS · PLUS LAUNCHES</text>
+    <path class="flow" d="M640 17 C760 17 760 192 880 192" />
+    <path class="flow" d="M640 59 C760 59 760 192 880 192" />
+    <path class="flow" d="M640 101 C760 101 760 192 880 192" />
+    <path class="flow" d="M640 143 C760 143 760 192 880 192" />
+    <path class="flow" d="M640 185 C760 185 760 192 880 192" />
+    <path class="flow" d="M640 227 C760 227 760 192 880 192" />
+    <path class="flow" d="M640 283 C760 283 760 192 880 192" />
+    <path class="flow" d="M640 325 C760 325 760 192 880 192" />
+    <path class="flow" d="M640 367 C760 367 760 192 880 192" />
+    <rect x="880" y="169" width="156" height="46" /><text x="892" y="189">ATLAS</text><text class="m" x="892" y="206">CESIUMJS GLOBE</text>
   </svg>
 </Figure>
 
@@ -57,23 +98,24 @@ Six-hourly model data is not live enough. The satellites go first; atmospheric m
 <Spec rows={[
   ['Engine', 'CesiumJS'],
   ['Base imagery', 'Blue Marble, 12 monthly mosaics, self-hosted'],
-  ['Live layer', 'Clouds only (v1). Air traffic later.'],
-  ['Sources', 'Five geostationary satellites, models as fill'],
-  ['Runs on', 'One desktop PC. No dedicated hardware yet.'],
-  ['Resolution', 'Enough. Tiling tens of gigabytes was tried once.'],
+  ['Live layer', 'Clouds, lightning, pollution, fires, wind, flights, ships and satellites, all from live feeds'],
+  ['Sources', 'Five geostationary satellites and the GFS weather model for clouds; the other layers in Fig. 2'],
+  ['Runs on', 'Cloud VM, 24/7, 365 days'],
+  ['Code', 'Nearly 10 900 lines. Most of them load-bearing.'],
 ]} />
 
-## Media
+{/* ## Media
 
 <MediaPair items={[
   { caption: 'Screen recording · v1 clouds over Europe' },
   { caption: 'Photo · Atlas running on the desk' },
-]} />
+]} /> */}
 
 ## Flight record
 
 <FlightRecord entries={[
-  { when: 'Earlier', state: 'done', text: 'First version built out of boredom. Stalled on live feeds and clouds that looked like clouds.' },
-  { when: '2026-10', state: 'now', text: 'Revived. Weather layer first; all five satellites from day one.' },
-  { when: 'Next', state: 'next', text: 'Satellite feeds on one grid, normalised, no visible seams.' },
+  { when: 'Earlier', text: 'First version built out of boredom. Stalled on live feeds and clouds that looked like clouds.' },
+  { when: '2026-10', text: 'Revived. Weather layer first; all five satellites from day one.' },
+  { when: '2026-10', text: 'Five satellites on one 0.1° grid, blended by view angle. No visible seams.' },
+  { when: 'Next', text: 'Keep it operational.' },
 ]} />

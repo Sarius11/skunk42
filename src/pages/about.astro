@@ -4,24 +4,18 @@ import Toc from '../components/Toc.astro';
 import Readout from '../components/blocks/Readout.astro';
 import Spec from '../components/blocks/Spec.astro';
 import { SITE } from '../site.config';
+import { Image } from 'astro:assets';
+import operatorPhoto from '../assets/operator.jpg';
 
 const toc = [
   { id: 'name', label: 'The name' },
-  { id: 'operator', label: 'The operator' },
-  { id: 'principles', label: 'Principles' },
+  { id: 'operator', label: 'The guy behind it all' },
   { id: 'contact', label: 'Contact' },
   { id: 'paperwork', label: 'Paperwork' },
 ];
 
-const principles = [
-  ['Over-engineer, for good measure.', 'If it is worth building, it is worth building twice as strong as it needs to be.'],
-  ['Test before you announce.', 'Nothing gets called operational until it has survived contact with reality.'],
-  ['Known issues are listed, not hidden.', 'Every project page says what is broken. It saves everyone time.'],
-  ['No committee.', 'Decisions are made by the person holding the wrench.'],
-  ['Nothing here is for sale.', 'If that changes, it will be a different website.'],
-];
 ---
-<Base title="About" description="Skunk 42 is a hangar for after-hours projects: simulations, models, machines and books. Nothing here is for sale." active="about">
+<Base title="About" description="Skunk 42 is a hangar for after-hours projects: simulations, models, machines and books." active="about">
   <div class="wrap">
     <div class="crumb">
       <a class="mono back" href="/">← Index</a>
@@ -30,7 +24,7 @@ const principles = [
     <div class="top">
       <span class="code dsg">S42-000 · ABOUT</span>
       <h1 class="title">About</h1>
-      <p class="lede">Skunk 42 is a hangar for after-hours projects: <b>simulations, models, machines and books.</b> Nothing here is for sale. Most of it works.</p>
+      <p class="lede">Skunk 42 is a hangar for after-hours projects: <b>simulations, models, machines and books.</b>  Most of it works too.</p>
     </div>
 
     <div class="doc-body">
@@ -40,49 +34,45 @@ const principles = [
           <h2>The name</h2>
           <div class="halves">
             <div>
-              <span class="mono">Half one</span>
+              <span class="mono">First half</span>
               <span class="big">SKUNK</span>
-              <p>For the Skunk Works: the small, unofficial engineering shop that built aircraft faster than the paperwork could follow. Small team, no committee, serious work.</p>
+              <p>For the Skunk Works: the small, unofficial engineering shop that built aircraft faster than the paperwork could follow.</p>
             </div>
             <div>
-              <span class="mono">Half two</span>
+              <span class="mono">Second half</span>
               <span class="big thin">42</span>
-              <p>The answer to life, the universe and everything, per Douglas Adams. The question is still being worked on.</p>
+              <p>The answer to life, the universe and everything. The question is still being worked on. Until then it is of paramount importance you know where your towel is.</p>
             </div>
           </div>
-          <p class="txt dim">Put together: serious engineering, applied to questions nobody assigned.</p>
         </section>
 
         <section id="operator" class="doc-section">
-          <h2>The operator</h2>
+          <h2>The guy behind it all</h2>
           <div class="op">
-            <div class="photo" role="img" aria-label="Photo of the operator, to be supplied">
-              <span class="cross" aria-hidden="true"></span>
-              <span class="mono rec"><span class="lamp lamp--live" aria-hidden="true"></span>Rec</span>
-              <span class="mono cap">Photo · 4:5 · to be supplied</span>
+            <div class="photo" role="img" aria-label="Photo of the operator">
+              <Image src={operatorPhoto} alt="Adam Nagy" widths={[240, 480]} sizes="240px" loading="lazy" />
             </div>
             <div>
               <p class="who">Adam Nagy</p>
-              <p class="txt">Started two companies at sixteen, which is either early or reckless. At twenty-two, ran operations for a 110-person rocketry organisation and built its machinery from zero: procurement, safety systems, an ERP, a brand book. Once closed the National Gallery for a day to host astronauts.</p>
+              <p class="txt">He started his first company at sixteen and ran operations for BME Suborbitals at twenty-two. In 2024 he joined the airline industry, where he has held multiple financial roles.</p>
               <p class="txt">Day job: the front office of an airline's treasury, where fuel, currencies and interest rates get hedged. Skunk 42 is what happens after the markets close.</p>
               <div class="spec-wrap">
                 <Spec rows={[
-                  ['Based', 'Budapest. Originally Pécs.'],
-                  ['Education', 'MSc Business Development, Corvinus · BSc International Economics, ELTE and Corvinus'],
-                  ['Rockets', 'Head of Operations, 110-person rocketry organisation'],
-                  ['Day job', 'Airline treasury, front office'],
-                  ['In progress', 'FRM (Financial Risk Manager) certification'],
+                  ['Based', 'Budapest, Hungary'],
+                  ['Education', 'MSc Business Development, Corvinus · BSc International Economics, ELTE'],
+                  ['Rockets', 'Head of Operations at BME Suborbitals, 110-person rocketry organisation'],
                 ]} />
               </div>
               <Readout items={[
                 { value: 16, label: 'Age at first company' },
                 { value: 110, label: 'People in the rocket org' },
-                { value: 1, label: 'National Gallery, closed' },
+                { value: 12, label: 'Rocket launches' },
               ]} />
             </div>
           </div>
         </section>
 
+        <!--
         <section id="principles" class="doc-section">
           <h2>Operating principles</h2>
           <ol class="rules" data-reveal>
@@ -109,13 +99,13 @@ const principles = [
             </ul>
           </div>
         </section>
-
+      -->
         <section id="paperwork" class="doc-section">
           <h2>Paperwork</h2>
           <div class="paper">
             <div>
               <h3>Imprint</h3>
-              <p>Skunk 42 is the personal website of Adam Nagy, Budapest, Hungary. It is a non-commercial site and offers no services for payment.</p>
+              <p>Skunk 42 is a personal website. It is a non-commercial site and offers no services for payment.</p>
               <p>Contact: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
             </div>
             <div>
@@ -148,7 +138,7 @@ const principles = [
 
   .op { display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: start; }
   .photo { aspect-ratio: 4 / 5; border: 1px solid var(--hairline); position: relative; background: var(--surface-100); overflow: hidden; }
-  .photo::before, .photo::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--ink); }
+  .photo::before, .photo::after { content: ""; position: absolute;z-index: 1; width: 18px; height: 18px; border: 2px solid var(--ink); }
   .photo::before { left: 10px; top: 10px; border-right: 0; border-bottom: 0; }
   .photo::after { right: 10px; bottom: 10px; border-left: 0; border-top: 0; }
   .photo .cap { position: absolute; left: 14px; right: 14px; bottom: 12px; }
@@ -157,6 +147,7 @@ const principles = [
   .photo .cross { position: absolute; left: 50%; top: 42%; width: 28px; height: 28px; margin: -14px; border: 1px solid var(--hairline); border-radius: var(--radius-round); }
   .who { font-weight: 800; font-size: 30px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
   .spec-wrap { margin: 22px 0 28px; }
+  .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
   .rules { list-style: none; border-top: 1px solid var(--hairline); }
   .rules li { display: grid; grid-template-columns: 70px 1fr; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--hairline); }

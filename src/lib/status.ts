@@ -38,6 +38,26 @@ export const LADDER: Status[] = [
   { code: 'X4', name: 'Lost', line: 'Rapid unscheduled disassembly. Debris recovered, dignity was not.', lamp: 'lost', group: 'End of life' },
 ];
 
+export const STATUS_GROUPS: { name: StatusGroup; prefix: string; summary: string }[] = [
+  { name: 'Pre-flight', prefix: 'P', summary: 'From the napkin to the first flight.' },
+  { name: 'In service', prefix: 'S', summary: 'It works, mostly. Nominal states are green.' },
+  { name: 'End of life', prefix: 'X', summary: 'Every program ends. Some more gracefully than others.' },
+];
+
+/** What each lamp looks like and means, for the legend. */
+export const LAMP_MEANING: Record<LampShape, string> = {
+  off: 'Hollow grey · off',
+  live: 'Solid orange · work underway',
+  hold: 'Hollow orange · paused',
+  go: 'Solid green · nominal',
+  upg: 'Green + orange · works, being improved',
+  anom: 'Orange, blinking · something broke',
+  fix: 'Half orange · being fixed',
+  recert: 'Hollow green · re-testing',
+  ret: 'Solid grey · honourably done',
+  lost: 'Grey cross · gone',
+};
+
 export function statusOf(code: StatusCode): Status {
   const s = LADDER.find((x) => x.code === code);
   if (!s) throw new Error(`Unknown status code: ${code}`);

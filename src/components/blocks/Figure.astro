@@ -4,10 +4,12 @@
 interface Props {
   caption: string;
   source?: string;
+  /** Narrowest the art may shrink to, in px; below that it scrolls sideways so labels stay legible. */
+  minWidth?: number;
 }
-const { caption, source } = Astro.props;
+const { caption, source, minWidth = 560 } = Astro.props;
 ---
-<figure class="fig">
+<figure class="fig" style={`--min:${minWidth}px`}>
   <div class="art"><slot /></div>
   <figcaption class="figcap">
     <span class="mono">{caption}</span>
@@ -18,7 +20,7 @@ const { caption, source } = Astro.props;
 <style>
   .fig { border: 1px solid var(--hairline); padding: 24px 20px 16px; margin-bottom: 16px; }
   .art { overflow-x: auto; }
-  .art :global(svg) { width: 100%; min-width: 560px; height: auto; display: block; }
+  .art :global(svg) { width: 100%; min-width: var(--min); height: auto; display: block; }
   .art :global(img) { width: 100%; height: auto; }
   .art :global(rect) { fill: var(--surface-100); stroke: var(--hairline); }
   .art :global(text) { fill: var(--ink); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; }

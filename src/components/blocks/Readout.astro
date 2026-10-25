@@ -1,17 +1,36 @@
 ---
 // Readout: two to four big numbers in the data style. Numeric values count up when they come into view.
+// prefix and suffix are set at full size (€, +); unit is set small after the number (GB, km).
+interface Item {
+  value: number | string;
+  label: string;
+  prefix?: string;
+  suffix?: string;
+  unit?: string;
+}
 interface Props {
-  items: { value: number | string; label: string }[];
+  items: Item[];
 }
 const { items } = Astro.props;
-const width = (v: number | string) => Math.max(2, String(v).length);
+// Plain numbers are zero-padded to two digits (05); dressed ones (€0, 25+, 60 GB) stay exact.
+const width = (it: Item) => {
+  const digits = String(it.value).length;
+  return it.prefix || it.suffix || it.unit ? digits : Math.max(2, digits);
+};
+// Thin-space thousands grouping: 50 000, as on a datasheet.
+const fmt = (v: number, w: number) => {
+  const s = String(v).padStart(w, '0');
+  return w >= 4 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : s;
+};
 ---
 <div class="ro" style={`--cols:${items.length}`}>
   {items.map((it) => (
     <div>
-      {typeof it.value === 'number'
-        ? <span class="n" data-to={it.value} data-w={width(it.value)}>{it.value}</span>
-        : <span class="n">{it.value}</span>}
+      <span class="n">
+        {it.prefix}{typeof it.value === 'number'
+          ? <span data-to={it.value} data-w={width(it)}>{fmt(it.value, width(it))}</span>
+          : it.value}{it.suffix}{it.unit && <span class="unit">{it.unit}</span>}
+      </span>
       <span class="mono">{it.label}</span>
     </div>
   ))}
@@ -21,29 +40,35 @@ const width = (v: number | string) => Math.max(2, String(v).length);
   .ro { display: grid; grid-template-columns: repeat(var(--cols), 1fr); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); margin-bottom: 16px; }
   .ro > div { padding: 22px 16px 18px; border-left: 1px solid var(--hairline); }
   .ro > div:first-child { border-left: 0; padding-left: 0; }
-  .n { font-family: var(--font-mono); font-size: 44px; line-height: 1; display: block; margin-bottom: 10px; font-variant-numeric: tabular-nums; }
+  .n { font-family: var(--font-mono); font-size: 44px; line-height: 1; display: block; margin-bottom: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .unit { font-size: 0.4em; letter-spacing: 0.08em; margin-left: 0.3em; color: var(--ink-muted); }
+  @media (max-width: 1100px) { .n { font-size: 36px; } }
   @media (max-width: 600px) {
     .ro { grid-template-columns: 1fr 1fr; }
     .ro > div:nth-child(odd) { border-left: 0; padding-left: 0; }
     .ro > div:nth-child(n + 3) { border-top: 1px solid var(--hairline); }
-    .n { font-size: 36px; }
+    .n { font-size: 32px; }
   }
 </style>
 
 <script>
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const pad = (v: number, w: number) => String(v).padStart(w, '0');
+  const fmt = (v: number, w: number) => {
+    const s = String(v).padStart(w, '0');
+    return w >= 4 ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : s;
+  };
   document.querySelectorAll<HTMLElement>('.ro').forEach((ro) => {
-    const nums = [...ro.querySelectorAll<HTMLElement>('.n[data-to]')];
+    const nums = [...ro.querySelectorAll<HTMLElement>('[data-to]')];
     if (reduce || !nums.length) return;
-    nums.forEach((n) => (n.textContent = pad(0, +n.dataset.w!)));
+    nums.forEach((n) => (n.textContent = fmt(0, +n.dataset.w!)));
     const io = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       io.disconnect();
       const s = performance.now();
       const step = (t: number) => {
-        const k = Math.min(1, (t - s) / 1000);
-        nums.forEach((n) => (n.textContent = pad(Math.round(+n.dataset.to! * k), +n.dataset.w!)));
+        const k = Math.min(1, (t - s) / 1200);
+        const eased = 1 - Math.pow(1 - k, 3);
+        nums.forEach((n) => (n.textContent = fmt(Math.round(+n.dataset.to! * eased), +n.dataset.w!)));
         if (k < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);

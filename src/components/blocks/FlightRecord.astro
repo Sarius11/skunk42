@@ -1,17 +1,14 @@
 ---
 // Flight record: dated one-liner milestones. Not a devlog.
-// done = hollow lamp, now = lit, next = blinking.
 interface Props {
-  entries: { when: string; state: 'done' | 'now' | 'next'; text: string }[];
+  entries: { when: string; text: string }[];
 }
 const { entries } = Astro.props;
-const lamp = { done: 'off', now: 'live', next: 'anom' } as const;
 ---
 <ol class="log">
   {entries.map((e) => (
     <li>
       <span class="mono">{e.when}</span>
-      <span class={`lamp lamp--${lamp[e.state]}`} aria-hidden="true"></span>
       <span class="t">{e.text}</span>
     </li>
   ))}
@@ -19,7 +16,7 @@ const lamp = { done: 'off', now: 'live', next: 'anom' } as const;
 
 <style>
   .log { border-top: 1px solid var(--hairline); list-style: none; margin-bottom: 16px; }
-  li { display: grid; grid-template-columns: 130px 26px 1fr; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+  li { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--hairline); align-items: baseline; }
   .t { font-size: 15px; line-height: 1.5; }
-  @media (max-width: 600px) { li { grid-template-columns: 80px 18px 1fr; } }
+  @media (max-width: 600px) { li { grid-template-columns: 80px 1fr; } }
 </style>

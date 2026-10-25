@@ -15,14 +15,14 @@ const current = (page: Props['active']) => (active === page ? 'page' : undefined
   <div class="bar">
     <a href="/" class="brand" aria-label="Skunk42, home"><Wordmark size={17} /></a>
     <nav class="nav" aria-label="Main">
-      <a href="/" aria-current={current('index')}>Index</a>
+      <a href="/" aria-current={current('index')}>Home</a>
       <a href="/about/" aria-current={current('about')}>About</a>
     </nav>
     <div class="tele">
       {anomaly
         ? <span class="mono"><span class="lamp lamp--anom" aria-hidden="true"></span><b>1</b> anomaly</span>
         : <span class="mono"><span class="lamp lamp--live" aria-hidden="true"></span><b>{pad2(litCount)}</b> active</span>}
-      <span class="mono clock">UTC <b data-utc>--:--:--</b></span>
+     <span class="mono clock">UTC <b data-utc>--:--:--</b></span>
       <button class="lights" type="button" data-lights aria-pressed="false"><i aria-hidden="true"></i>LIGHTS</button>
     </div>
     <button class="menubtn" type="button" data-menu aria-expanded="false" aria-controls="mobile-menu">

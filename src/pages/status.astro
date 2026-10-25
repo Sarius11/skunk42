@@ -1,0 +1,105 @@
+---
+import Base from '../layouts/Base.astro';
+import { getProjects } from '../lib/projects';
+import { LADDER, STATUS_GROUPS, LAMP_MEANING } from '../lib/status';
+
+// The status ladder: every state a program can be in, and who is in it right now.
+const projects = await getProjects();
+const inState = (code: string) => projects.filter((p) => p.data.status === code);
+---
+<Base title="Status ladder" description="Every state a Skunk 42 program can be in: pre-flight, in service and end of life. Formal codes, honest descriptions.">
+  <div class="wrap">
+    <div class="crumb">
+      <a class="mono back" href="/">← Index</a>
+      <span class="mono">S42-000 · Reference</span>
+    </div>
+    <div class="top">
+      <span class="code dsg">S42-000 · STATUS LADDER</span>
+      <h1 class="title">Status</h1>
+      <p class="lede">Every program sits on one rung of this ladder. <b>The codes are formal and sortable; the lines do the talking.</b> The lamp's shape carries the state as well as its colour.</p>
+    </div>
+
+    <dl class="legend">
+      <div><dt><span class="lamp lamp--live" aria-hidden="true"></span>Signal</dt><dd>Work underway, or something is wrong.</dd></div>
+      <div><dt><span class="lamp lamp--go" aria-hidden="true"></span>Nominal</dt><dd>In service and behaving.</dd></div>
+      <div><dt><span class="lamp lamp--off" aria-hidden="true"></span>Grey</dt><dd>Not running: not started yet, or finished.</dd></div>
+    </dl>
+
+    {STATUS_GROUPS.map((g) => (
+      <section class="group" aria-labelledby={`g-${g.prefix}`}>
+        <div class="ghead">
+          <h2 id={`g-${g.prefix}`} class="t-section">{g.name}</h2>
+          <span class="mono">{g.prefix}-codes · {g.summary}</span>
+        </div>
+        <ol class="ladder">
+          {LADDER.filter((s) => s.group === g.name).map((s) => {
+            const here = inState(s.code);
+            return (
+              <li id={s.code} class:list={['rung', { alert: s.lamp === 'anom' }]}>
+                <span class="mono c">{s.code}</span>
+                <span class={`lamp lamp--${s.lamp}`} aria-hidden="true"></span>
+                <span class="name">{s.name}</span>
+                <span class="say">{s.line}</span>
+                <span class="mono lit">{LAMP_MEANING[s.lamp]}</span>
+                <span class="here">
+                  {here.length > 0
+                    ? here.map((p) => <a href={`/${p.id}/`}><span class="mono">{p.data.designation}</span> {p.data.title}</a>)
+                    : <span class="mono none">—</span>}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .crumb { display: flex; justify-content: space-between; gap: 16px; padding-top: 28px; }
+  .back:hover { color: var(--ink); }
+  .top { padding: 40px 0 40px; border-bottom: 1px solid var(--hairline); }
+  .dsg { font-size: 13px; }
+  .title { font-weight: 800; font-size: clamp(48px, 9vw, 96px); line-height: 0.92; text-transform: uppercase; letter-spacing: 0.04em; margin: 12px 0 20px; }
+  .lede { font-size: 20px; line-height: 1.45; color: var(--ink-muted); max-width: 760px; }
+  .lede b { color: var(--ink); font-weight: 400; }
+
+  .legend { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--hairline); }
+  .legend > div { padding: 18px 16px 18px 0; }
+  .legend > div + div { padding-left: 16px; border-left: 1px solid var(--hairline); }
+  .legend dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .legend dd { font-size: 14px; color: var(--ink-muted); }
+
+  .group { padding-top: 56px; }
+  .ghead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .ladder { list-style: none; border-top: 1px solid var(--hairline); }
+  .rung {
+    display: grid; grid-template-columns: 44px 20px 150px minmax(0, 1fr) 220px 200px; gap: 12px; align-items: baseline;
+    padding: 14px 0; border-bottom: 1px solid var(--hairline); scroll-margin-top: 96px;
+  }
+  .rung:target { background: var(--surface-100); box-shadow: -8px 0 0 var(--surface-100), 8px 0 0 var(--surface-100); }
+  .c { color: var(--ink); }
+  .name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .say { font-size: 16px; line-height: 1.45; }
+  .alert .say { color: var(--signal); }
+  .lit { font-size: 10px; }
+  .here { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+  .here a { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; transition: color 0.2s; }
+  .here a .mono { font-weight: 400; margin-right: 4px; }
+  .here a:hover { color: var(--signal); }
+  .none { opacity: 0.5; }
+
+  @media (max-width: 1000px) {
+    .rung { grid-template-columns: 44px 20px 1fr auto; }
+    .say { grid-column: 3 / -1; }
+    .lit { grid-column: 3 / -1; }
+    .here { grid-column: 3 / -1; text-align: left; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
+    .here .none { display: none; }
+    .name { grid-column: 3; grid-row: 1; }
+  }
+  @media (max-width: 760px) {
+    .legend { grid-template-columns: 1fr; }
+    .legend > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--hairline); }
+    .lede { font-size: 18px; }
+  }
+</style>

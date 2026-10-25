@@ -21,15 +21,15 @@ const total = pad2(projects.length);
     <div class="wrap hero-in">
       <div class="hero-t">
         <h1 id="hero-title" class="t-hero">
-          <span class="ln"><span>Unsanctioned projects.</span></span>
-          <span class="ln"><span>Properly engineered.</span></span>
+          <span class="ln"><span>Curious tinkerings.</span></span>
+          <span class="ln"><span>Done right.</span></span>
         </h1>
-        <p class="sub">Where the after-hours work lives: simulations, models, machines and books.</p>
+        <p class="sub">“The cure for boredom is curiosity. There is no cure for curiosity.” - Ellen Parr</p>
       </div>
       <div class="readout">
         <span class="mono">Mission elapsed <b data-met={SITE.missionStart}>T+ 000d 00:00:00</b></span>
         <span class="mono">Last test <b data-last={lastTest ?? ''}>{lastTest ? lastTest : 'pending'}</b></span>
-        <span class="mono">Budget variance <b>yes</b></span>
+        <!-- <span class="mono">Budget variance <b>yes</b></span> -->
       </div>
     </div>
   </section>
@@ -65,13 +65,13 @@ const total = pad2(projects.length);
   <section class="wrap sec" aria-labelledby="index-h">
     <div class="sechead">
       <h2 id="index-h" class="t-section">Index</h2>
-      <span class="mono" data-count aria-live="polite">Showing {total} / {total}</span>
+     <!--  <span class="mono" data-count aria-live="polite">Showing {total} / {total}</span> -->
     </div>
-    <div class="filters" role="group" aria-label="Filter programs">
+    <!--<div class="filters" role="group" aria-label="Filter programs">
       <button type="button" data-f="all" aria-pressed="true">ALL</button>
       <button type="button" data-f="labs" aria-pressed="false">LABS</button>
       <button type="button" data-f="studios" aria-pressed="false">STUDIOS</button>
-    </div>
+    </div> -->
     <ul class="rows" data-total={projects.length}>
       {projects.map((p) => {
         const s = statusOf(p.data.status);

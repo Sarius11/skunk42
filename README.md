@@ -29,7 +29,14 @@ nextMilestone: What happens next
 knownIssues: A plain statement of a real hazard.
 featured: false               # up to two get a card on Home
 visual: plate                 # globe | grid | plate (title plate for text-only work)
-heroImage: /media/name.jpg    # optional, file under public/
+hero: true                    # false hides the big panel on the program page
+heroImage: ../../assets/photo.jpg   # optional banner photo in src/assets/, resized at build
+heroAlt: What the photo shows.
+heroLabel: Frame ID or short tag   # small mono label, top-left
+heroFocus: 50% 40%            # which part stays in view when cropped
+heroTrim: { left: 11 }        # push a dark photo edge off-screen (% of page width)
+heroCredit: Image courtesy of …
+heroCreditUrl: https://…      # the credit links here
 ---
 ```
 
@@ -44,7 +51,7 @@ are available without imports:
 | `<Media src="/media/x.jpg" alt="…" caption="…" />` | One image or video (no `src` = dashed slot) |
 | `<MediaPair items={[{…}, {…}]} />` | Two side by side |
 | `<Excerpt source="…">…</Excerpt>` | A long quote, for the books |
-| `<FlightRecord entries={[{ when, state: 'done' \| 'now' \| 'next', text }]} />` | Dated milestones |
+| `<FlightRecord entries={[{ when: '2026-10', text: '…' }]} />` | Dated milestones |
 
 Each program also gets a share card at `/og/<file-name>.png`, generated at build time.
 

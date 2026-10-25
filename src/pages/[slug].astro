@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import StatusBlock from '../components/StatusBlock.astro';
 import Visual from '../components/Visual.astro';
@@ -35,15 +36,43 @@ const { Content, headings } = await render(project);
 const toc = headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text }));
 const position = `${division === 'labs' ? 'Labs' : 'Studios'} · ${pad2(siblings.indexOf(project) + 1)} of ${pad2(siblings.length)}`;
 const many = prev.id !== project.id;
+// A photo becomes the masthead background; otherwise the visual may sit below the top as a panel.
+const banner = d.hero && !d.heroImage;
+// The photo box is widened past the page edges by the trim, so those strips of the photo fall outside.
+const trimL = d.heroTrim?.left ?? 0;
+const trimR = d.heroTrim?.right ?? 0;
+const photoStyle = [
+  d.heroFocus && `object-position:${d.heroFocus}`,
+  (trimL || trimR) && `left:-${trimL}%;width:${100 + trimL + trimR}%`,
+].filter(Boolean).join(';') || undefined;
 ---
 <Base title={d.title} description={`${d.designation} · ${d.lede}`} ogImage={`/og/${project.id}.png`} active="index">
-  <div class="wrap">
+  <section class:list={['masthead', { photo: d.heroImage, 'place-right': d.heroImage && d.heroPlacement === 'right' }]}>
+    {d.heroImage && (
+      <>
+        <Picture
+          src={d.heroImage}
+          alt={d.heroAlt ?? ''}
+          class="mh-img"
+          formats={['avif', 'webp']}
+          widths={[960, 1280, 1920, 2560]}
+          width={2560}
+          sizes="100vw"
+          quality={80}
+          loading="eager"
+          fetchpriority="high"
+          style={photoStyle}
+        />
+        <div class="veil" aria-hidden="true"></div>
+      </>
+    )}
+    <div class="wrap mh-in">
     <div class="crumb">
       <a class="mono back" href="/">← Index</a>
       <span class="mono">{position}</span>
     </div>
 
-    <div class="top">
+    <div class:list={['top', { ruled: !banner && !d.heroImage }]}>
       <div>
         <span class="code dsg">{d.designation} · {division.toUpperCase()}</span>
         <h1 class="title">{d.title}</h1>
@@ -61,7 +90,19 @@ const many = prev.id !== project.id;
       />
     </div>
 
-    <Visual project={project} variant="hero" />
+    {d.heroImage && d.heroCredit && (
+      <p class="mono credit">
+        {d.heroLabel && <span>{d.heroLabel} · </span>}
+        {d.heroCreditUrl
+          ? <a href={d.heroCreditUrl} target="_blank" rel="noopener">{d.heroCredit} <span aria-hidden="true">↗</span></a>
+          : d.heroCredit}
+      </p>
+    )}
+    </div>
+  </section>
+
+  <div class="wrap">
+    {banner && <Visual project={project} variant="hero" />}
 
     <div class="doc-body">
       {toc.length > 0 ? <Toc items={toc} /> : <div></div>}
@@ -80,9 +121,76 @@ const many = prev.id !== project.id;
 </Base>
 
 <style>
+  /* Photo masthead: the picture runs full-bleed behind the header, crumb, title and status block.
+     An opal veil in the page colour keeps text legible and dissolves the photo into the page below. */
+  .masthead { position: relative; }
+  .masthead.photo {
+    --veil: 0%;
+    --veil-side: 45%;
+    --m: clamp(580px, 78vh, 780px);
+    margin-top: calc(-1 * var(--hdr-h)); padding-top: var(--hdr-h);
+    min-height: var(--m);
+    display: flex; overflow: hidden; isolation: isolate;
+  }
+  :global([data-theme="light"]) .masthead.photo { --veil: 66%; --veil-side: 60%; }
+  /* A cut-out subject stays vivid on paper: no veil, the text sits beside it, not on it. */
+  :global([data-theme="light"]) .masthead.place-right { --veil: 0%; --veil-side: 0%; }
+  .masthead.photo .mh-in { display: flex; flex-direction: column; }
+  .masthead.photo .top { margin-top: auto; padding-bottom: 20px; }
+  .masthead :global(.mh-img) {
+    position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; max-width: none; object-fit: cover;
+  }
+  /* A single subject on black (a globe): sit it right of the title. The photo is masked to a circle ending at
+     the globe's limb, so its black surround is cut away and only the Earth sits on the page, in either theme. */
+  .masthead.place-right :global(.mh-img) {
+    /* The globe rises from the bottom: its centre at 60% of the masthead, its radius 45% of it (the photo's
+       globe radius is 40.6% of the photo's height), so its top clears the header. Its left edge starts 24px
+       past the end of the lede. */
+    --h: calc(var(--m) * 1.11);
+    --r: calc(var(--h) * 0.406);
+    --lede-end: calc(max(0px, (100vw - var(--max)) / 2) + var(--gutter) + 520px);
+    inset: auto; top: 60%; left: max(60%, calc(var(--lede-end) + var(--r) + 24px)); width: auto; height: var(--h);
+    transform: translate(-50%, -50%); object-fit: contain;
+    --subject: radial-gradient(ellipse 20% 41% at 50.8% 51.2%, #000 93%, transparent 100%);
+    -webkit-mask-image: var(--subject);
+    mask-image: var(--subject);
+  }
+  .veil {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--surface-000) 78%, transparent), color-mix(in srgb, var(--surface-000) 40%, transparent) 9%, transparent 20%),
+      linear-gradient(to right, color-mix(in srgb, var(--surface-000) var(--veil-side), transparent), transparent 55%),
+      linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--surface-000) 80%, transparent) 90%, var(--surface-000)),
+      color-mix(in srgb, var(--surface-000) var(--veil), transparent);
+    transition: background 0.35s;
+  }
+  /* Frosted glass: heavy blur, a pale frost tint, a bright top edge catching light, a soft drop shadow. */
+  .masthead.photo :global(.status) {
+    --frost: rgba(20, 20, 21, 0.74);
+    --frost-edge: rgba(255, 255, 255, 0.14);
+    --frost-glint: rgba(255, 255, 255, 0.1);
+    --frost-shadow: rgba(0, 0, 0, 0.4);
+    background: var(--frost);
+    border: 1px solid var(--frost-edge);
+    box-shadow: inset 0 1px 0 var(--frost-glint), 0 24px 60px -12px var(--frost-shadow);
+    backdrop-filter: blur(28px) saturate(1.6);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  }
+  :global([data-theme="light"]) .masthead.photo :global(.status) {
+    --frost: rgba(251, 250, 247, 0.74);
+    --frost-edge: rgba(255, 255, 255, 0.85);
+    --frost-glint: rgba(255, 255, 255, 0.95);
+    --frost-shadow: rgba(17, 17, 17, 0.18);
+  }
+  .masthead.photo :global(.status .h) { border-bottom-color: var(--frost-edge); }
+  .credit { text-align: right; padding-bottom: 18px; font-size: 10px; letter-spacing: 0.1em; }
+  .credit a { transition: color 0.2s; }
+  .credit a:hover { color: var(--ink); }
+
   .crumb { display: flex; justify-content: space-between; gap: 16px; padding-top: 28px; }
   .back:hover { color: var(--ink); }
   .top { display: grid; grid-template-columns: 1fr 400px; gap: 48px; padding: 40px 0; align-items: end; }
+  .top.ruled { padding-bottom: 48px; border-bottom: 1px solid var(--hairline); }
   .dsg { font-size: 13px; }
   .title {
     font-weight: 800; font-size: clamp(48px, 9vw, 96px); line-height: 0.92; text-transform: uppercase;
@@ -96,6 +204,17 @@ const many = prev.id !== project.id;
   .next a:hover b { color: var(--signal); }
   @media (max-width: 900px) {
     .top { grid-template-columns: 1fr; gap: 28px; }
+    .masthead.photo { min-height: 0; }
+    .masthead.photo { --veil-side: 0%; --veil: 38%; }
+    :global([data-theme="light"]) .masthead.photo { --veil: 72%; }
+    .credit { text-align: left; }
+    /* On a phone the subject becomes a cap under the header and the text starts below it. */
+    .masthead.place-right, :global([data-theme="light"]) .masthead.place-right { --veil: 0%; }
+    .masthead.place-right :global(.mh-img) {
+      /* Globe top sits 56px under the header (below the crumb); the photo's globe top is 10.6% of its height down. */
+      top: calc(var(--hdr-h) + 56px - 11vw); left: 50%; height: 104vw; transform: translateX(-50%);
+    }
+    .masthead.place-right .top { margin-top: calc(84vw - 20px); }
   }
   @media (max-width: 600px) {
     .lede { font-size: 18px; }
